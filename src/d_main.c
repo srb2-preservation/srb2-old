@@ -1341,8 +1341,16 @@ void D_SRB2Main(void)
 	CONS_Printf(text[ST_INIT_NUM]);
 	ST_Init();
 
-	if (M_CheckParm("-internetserver"))
-		CV_SetValue(&cv_internetserver, 1);
+	if (M_CheckParm("-room"))
+	{
+		if (!M_IsNextParm())
+			I_Error("usage: -room <room_id>\nCheck the Master Server's webpage for room ID numbers.\n");
+		ms_RoomId = atoi(M_GetNextParm());
+
+#ifdef UPDATE_ALERT
+		GetMODVersion_Console();
+#endif
+	}
 
 	// init all NETWORK
 	CONS_Printf(text[D_CHECKNET_NUM]);

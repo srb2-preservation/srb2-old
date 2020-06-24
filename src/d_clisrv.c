@@ -542,12 +542,21 @@ static void CL_LoadReceivedSavegame(void)
 }
 #endif
 
-static void SendAskInfo(int node)
+static void SendAskInfo(INT32 node, boolean viams)
 {
+	const tic_t asktime = I_GetTime();
 	netbuffer->packettype = PT_ASKINFO;
 	netbuffer->u.askinfo.version = VERSION;
-	netbuffer->u.askinfo.time = LONG(I_GetTime());
+	netbuffer->u.askinfo.time = (tic_t)LONG(asktime);
+
+	// Even if this never arrives due to the host being firewalled, we've
+	// now allowed traffic from the host to us in, so once the MS relays
+	// our address to the host, it'll be able to speak to us.
 	HSendPacket(node, false, 0, sizeof (askinfo_pak));
+
+	// Also speak to the MS.
+	if (viams && node != 0 && node != BROADCASTADDR)
+		SendAskInfoViaMS(node, asktime);
 }
 
 serverelem_t serverlist[MAXSERVERLIST];
@@ -626,12 +635,13 @@ static void SL_InsertServer(serverinfo_pak* info, signed char node)
 	} while (moved);
 }
 
-void CL_UpdateServerList(boolean internetsearch)
+void CL_UpdateServerList(boolean internetsearch, INT32 room)
 {
 	SL_ClearServerList(0);
 
 	if (!netgame && I_NetOpenSocket)
 	{
+		MSCloseUDPSocket();		// Tidy up before wiping the slate.
 		if (I_NetOpenSocket())
 		{
 			netgame = true;
@@ -641,34 +651,61 @@ void CL_UpdateServerList(boolean internetsearch)
 
 	// search for local servers
 	if (netgame)
-		SendAskInfo(BROADCASTADDR);
+		SendAskInfo(BROADCASTADDR, false);
 
 	if (internetsearch)
 	{
 		const msg_server_t *server_list;
-		int i;
-
-		server_list = GetShortServersList();
+		INT32 i = -1;
+		server_list = GetShortServersList(room);
 		if (server_list)
 		{
-			for (i = 0; server_list[i].header[0]; i++)
-			{
-				int node;
-				XBOXSTATIC char addr_str[24];
+			char version[8] = "";
+#if VERSION > 0 || SUBVERSION > 0
+			snprintf(version, sizeof (version), "%d.%d.%d", VERSION/100, VERSION%100, SUBVERSION);
+#else
+			strcpy(version, GetRevisionString());
+#endif
+			version[sizeof (version) - 1] = '\0';
 
-				// insert ip (and optionaly port) in node list
-				sprintf(addr_str, "%s:%s", server_list[i].ip, server_list[i].port);
-				node = I_NetMakeNode(addr_str);
-				if (node == -1)
-					break; // no more node free
-				SendAskInfo(node);
+			for (i = 0; server_list[i].header.buffer[0]; i++)
+			{
+				// Make sure MS version matches our own, to
+				// thwart nefarious servers who lie to the MS.
+
+				if (strcmp(version, server_list[i].version) == 0)
+				{
+					INT32 node = I_NetMakeNodewPort(server_list[i].ip, server_list[i].port);
+					if (node == -1)
+						break; // no more node free
+					SendAskInfo(node, true);
+					// Force close the connection so that servers can't eat
+					// up nodes forever if we never get a reply back from them
+					// (usually when they've not forwarded their ports).
+					//
+					// Don't worry, we'll get in contact with the working
+					// servers again when they send SERVERINFO to us later!
+					//
+					// (Note: as a side effect this probably means every
+					// server in the list will probably be using the same node (e.g. node 1),
+					// not that it matters which nodes they use when
+					// the connections are closed afterwards anyway)
+					// -- Monster Iestyn 12/11/18
+					Net_CloseConnection(node|FORCECLOSE);
+				}
 			}
+		}
+
+		//no server list?(-1) or no servers?(0)
+		if (!i)
+		{
+			; /// TODO: display error or warning?
 		}
 	}
 }
 
 // use adaptive send using net_bandwidth and stat.sendbytes
-static void CL_ConnectToServer(void)
+static void CL_ConnectToServer(boolean viams)
 {
 	int pnumnodes, nodewaited = doomcom->numnodes, i;
 	boolean waitmore;
@@ -749,7 +786,7 @@ static void CL_ConnectToServer(void)
 				// ask the info to the server (askinfo packet)
 				if (asksent + TICRATE < I_GetTime())
 				{
-					SendAskInfo(servernode);
+					SendAskInfo(servernode, viams);
 					asksent = I_GetTime();
 				}
 				break;
@@ -847,6 +884,9 @@ static void CL_ConnectToServer(void)
 
 static void Command_connect(void)
 {
+	// Assume we connect directly
+	boolean viams = false;
+
 	if (COM_Argc() < 2)
 	{
 		CONS_Printf("connect <serveraddress>: connect to a server\n"
@@ -908,7 +948,7 @@ static void Command_connect(void)
 	}
 
 	CV_SetValue(&cv_splitscreen, false);
-	CL_ConnectToServer();
+	CL_ConnectToServer(viams);
 }
 
 static void ResetNode(int node);
@@ -1328,7 +1368,7 @@ void D_QuitNetGame(void)
 		for (i = 0; i < MAXNETNODES; i++)
 			if (nodeingame[i])
 				HSendPacket(i, true, 0, 0);
-		if (serverrunning && cv_internetserver.value)
+		if (serverrunning && ms_RoomId > 0)
 			UnregisterServer();
 	}
 	else if (servernode > 0 && servernode < MAXNETNODES && nodeingame[(byte)servernode]!=0)
@@ -1526,14 +1566,15 @@ boolean SV_SpawnServer(void)
 		SV_ResetServer();
 		if (netgame && I_NetOpenSocket)
 		{
+			MSCloseUDPSocket();		// Tidy up before wiping the slate.
 			I_NetOpenSocket();
-			if (cv_internetserver.value)
-				RegisterServer(0, 0);
+			if (ms_RoomId > 0)
+				RegisterServer();
 		}
 
 		// non dedicated server just connect to itself
 		if (!dedicated)
-			CL_ConnectToServer();
+			CL_ConnectToServer(false);
 		else doomcom->numslots = 1;
 
 		motd[0] = '\0';
@@ -2354,9 +2395,7 @@ FILESTAMP
 		CL_SendClientCmd(); // send tic cmd
 	else
 	{
-		// acking the master server
-		if (cv_internetserver.value)
-			SendPingToMasterServer();
+		MasterClient_Ticker(); // Acking the Master Server
 
 		if (!demoplayback)
 		{

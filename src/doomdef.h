@@ -153,6 +153,61 @@ extern FILE *logstream;
 
 //#define SLOPENESS // Fun experimental slope stuff!
 
+// Modification options
+// If you want to take advantage of the Master Server's ability to force clients to update
+// to the latest version, fill these out.  Otherwise, just comment out UPDATE_ALERT and leave
+// the other options the same.
+
+// Comment out this line to completely disable update alerts (recommended for testing, but not for release)
+//#define UPDATE_ALERT
+
+// The string used in the alert that pops up in the event of an update being available.
+// Please change to apply to your modification (we don't want everyone asking where your mod is on SRB2.org!).
+#define UPDATE_ALERT_STRING \
+"A new update is available for SRB2.\n"\
+"Please visit insert url here to download it.\n"\
+"\n"\
+"You are using version: %s\n"\
+"The newest version is: %s\n"\
+"\n"\
+"This update is required for online\n"\
+"play using the Master Server.\n"\
+"You will not be able to connect to\n"\
+"the Master Server until you update to\n"\
+"the newest version of the game.\n"\
+"\n"\
+"(Press a key)\n"
+
+// The string used in the I_Error alert upon trying to host through command line parameters.
+// Generally less filled with newlines, since Windows gives you lots more room to work with.
+#define UPDATE_ALERT_STRING_CONSOLE \
+"A new update is available for SRB2.\n"\
+"Please visit insert url here to download it.\n"\
+"\n"\
+"You are using version: %s\n"\
+"The newest version is: %s\n"\
+"\n"\
+"This update is required for online play using the Master Server.\n"\
+"You will not be able to connect to the Master Server\n"\
+"until you update to the newest version of the game.\n"
+
+// For future use, the codebase is the version of SRB2 that the modification is based on,
+// and should not be changed unless you have merged changes between versions of SRB2
+// (such as 2.0.4 to 2.0.5, etc) into your working copy.
+// Will always resemble the versionstring, 205 = 2.0.5, 210 = 2.1, etc.
+#define CODEBASE 109
+
+// The Modification ID; must be obtained from Rob ( https://mb.srb2.org/private.php?do=newpm&u=546 ).
+// DO NOT try to set this otherwise, or your modification will be unplayable through the Master Server.
+// "18" is the default mod ID for version 2.2
+#define MODID 99
+
+// The Modification Version, starting from 1. Do not follow your version string for this,
+// it's only for detection of the version the player is using so the MS can alert them of an update.
+// Only set it higher, not lower, obviously.
+// Note that we use this to help keep internal testing in check; this is why v2.2.0 is not version "1".
+#define MODVERSION 1
+
 // =========================================================================
 
 // The maximum number of players, multiplayer/networking.

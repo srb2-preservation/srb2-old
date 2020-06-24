@@ -105,7 +105,7 @@ extern boolean (*I_NetCanSend)(void);
 
 	\return	void
 
-	
+
 */
 extern void (*I_NetFreeNodenum)(int nodenum);
 
@@ -115,9 +115,21 @@ extern void (*I_NetFreeNodenum)(int nodenum);
 
 	\return	number of node
 
-	
+
 */
 extern signed char (*I_NetMakeNode)(const char *address);
+
+/**	\brief	open a connection with specified address and port
+
+	\param	address	address to connect to
+
+	\param	port	port to connect to
+
+	\return	number of node
+
+
+*/
+extern SINT8 (*I_NetMakeNodewPort)(const char *address, const char *port);
 
 /**	\brief open connection
 */
@@ -129,6 +141,7 @@ extern void (*I_NetCloseSocket)(void);
 
 
 extern boolean (*I_Ban) (int node);
+extern const char *(*I_GetNodeAddress) (INT32 node);
 extern void (*I_ClearBans)(void);
 extern boolean *bannednode;
 

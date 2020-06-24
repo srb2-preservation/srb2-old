@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // Copyright (C) 1998-2000 by DooM Legacy Team.
@@ -15,7 +15,7 @@
 //-----------------------------------------------------------------------------
 /// \file
 /// \brief TCP driver, socket code.
-/// 
+///
 ///	This is not really OS-dependent because all OSes have the same socket API.
 ///	Just use ifdef for OS-dependent parts.
 
@@ -56,7 +56,7 @@
 #endif
 
 #ifdef _arch_dreamcast
-#include <kos/net.h> 
+#include <kos/net.h>
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -165,6 +165,7 @@ static int ipx = 0;
 #include "i_net.h"
 #include "d_net.h"
 #include "i_tcp.h"
+#include "i_addrinfo.h"
 #ifndef NONET
 static mysockaddr_t clientaddress[MAXNETNODES+1];
 static boolean nodeconnected[MAXNETNODES+1];
@@ -497,6 +498,19 @@ static void SOCK_FreeNodenum(int numnode)
 }
 #endif
 
+static const char *SOCK_GetNodeAddress(INT32 node)
+{
+	if (node == 0)
+		return "self";
+#ifdef NONET
+	return NULL;
+#else
+	if (!nodeconnected[node])
+		return NULL;
+	return SOCK_AddrToStr(&clientaddress[node]);
+#endif
+}
+
 //
 // UDPsocket
 //
@@ -596,6 +610,8 @@ static SOCKET_TYPE UDP_Socket(void)
 		else
 			CONS_Printf("Network system buffer set to: %dKb\n",i>>10);
 	}
+
+	current_port = (UINT16)ntohs(address.sin_port);
 
 	// ip + udp
 	packetheaderlength = 20 + 8; // for stats
@@ -743,7 +759,7 @@ boolean I_InitTcpDriver(void)
 		CONS_Printf("WinSock description: %s\n",WSAData.szDescription);
 		CONS_Printf("WinSock System Status: %s\n",WSAData.szSystemStatus);
 #endif
-#ifdef _arch_dreamcast 
+#ifdef _arch_dreamcast
 		return;
 		net_init();
 		lwip_kos_init();
@@ -917,7 +933,53 @@ static signed char SOCK_NetMakeNode(const char *hostname)
 		return newnode;
 	}
 }
+
+static SINT8 SOCK_NetMakeNodewPort(const char *address, const char *port)
+{
+	SINT8 newnode = -1;
+	struct my_addrinfo *ai = NULL, *runp, hints;
+	int gaie;
+
+	 if (!port || !port[0])
+		port = DEFAULTPORT;
+
+	DEBFILE(va("Creating new node: %s@%s\n", address, port));
+
+	memset (&hints, 0x00, sizeof (hints));
+	hints.ai_flags = 0;
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_DGRAM;
+	hints.ai_protocol = IPPROTO_UDP;
+
+	gaie = I_getaddrinfo(address, port, &hints, &ai);
+	if (gaie == 0)
+	{
+		newnode = getfreenode();
+	}
+	if (newnode == -1)
+	{
+		I_freeaddrinfo(ai);
+		return -1;
+	}
+	else
+		runp = ai;
+
+	while (runp != NULL)
+	{
+		// find ip of the server
+		if (sendto(mysocket, NULL, 0, 0, runp->ai_addr, runp->ai_addrlen) == 0)
+		{
+			memcpy(&clientaddress[newnode], runp->ai_addr, runp->ai_addrlen);
+			break;
+		}
+		runp = runp->ai_next;
+	}
+	I_freeaddrinfo(ai);
+	return newnode;
+}
 #endif
+
+
 
 static boolean SOCK_OpenSocket(void)
 {
@@ -936,6 +998,7 @@ static boolean SOCK_OpenSocket(void)
 	I_NetCloseSocket = SOCK_CloseSocket;
 	I_NetFreeNodenum = SOCK_FreeNodenum;
 	I_NetMakeNode = SOCK_NetMakeNode;
+	I_NetMakeNodewPort = SOCK_NetMakeNodewPort;
 
 #ifdef SELECTTEST
 	// seem like not work with libsocket : (
@@ -1064,6 +1127,7 @@ boolean I_InitTcpNetwork(void)
 	I_NetOpenSocket = SOCK_OpenSocket;
 	I_Ban = SOCK_Ban;
 	I_ClearBans = SOCK_ClearBans;
+	I_GetNodeAddress = SOCK_GetNodeAddress;
 	bannednode = SOCK_bannednode;
 
 	return ret;

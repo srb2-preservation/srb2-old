@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
@@ -16,10 +16,10 @@
 //-----------------------------------------------------------------------------
 /// \file
 /// \brief Networking stuff.
-/// 
+///
 ///	part of layer 4 (transport) (tp4) of the osi model
 ///	assure the reception of packet and proceed a checksums
-/// 
+///
 ///	There is a data struct that stores network
 ///	communication related stuff, and another
 ///	one that defines the actual packets to
@@ -29,11 +29,12 @@
 #define __D_NET__
 
 // Max computers in a game.
-#define MAXNETNODES 32
+#define MAXNETNODES (MAXPLAYERS+4)
 #define BROADCASTADDR MAXNETNODES
 #define MAXSPLITSCREENPLAYERS 2 // max number of players on a single computer
 
 #define STATLENGTH (TICRATE*2)
+#define FORCECLOSE 0x8000
 
 // stat of net
 extern int ticruned, ticmiss;

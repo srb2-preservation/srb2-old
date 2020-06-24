@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
@@ -16,7 +16,7 @@
 //-----------------------------------------------------------------------------
 /// \file
 /// \brief SRB2 standard types
-/// 
+///
 ///	Simple basic typedefs, isolated here to make it easier
 ///	separating modules.
 
@@ -269,6 +269,7 @@ typedef union FColorRGBA RGBA_t;
 #define FUNCNORETURN __attribute__ ((noreturn))
 #define FUNCIERROR __attribute__ ((format(printf, 1, 0),noreturn))
 #define FUNCDEAD __attribute__ ((deprecated))
+#define FUNCMATH __attribute__((const))
 #if (__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
 #define FUNCINLINE __attribute__((always_inline))
 #endif
@@ -296,6 +297,9 @@ typedef union FColorRGBA RGBA_t;
 #endif
 #ifndef FUNCIERROR
 #define FUNCIERROR
+#endif
+#ifndef FUNCMATH
+#define FUNCMATH
 #endif
 #ifndef FUNCDEAD
 #define FUNCDEAD

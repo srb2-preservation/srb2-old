@@ -330,6 +330,7 @@ OBJS := $(i_main_o) \
 		$(OBJDIR)/w_wad.o    \
 		$(OBJDIR)/filesrch.o \
 		$(OBJDIR)/mserv.o    \
+		$(OBJDIR)/i_addrinfo.o \
 		$(OBJDIR)/i_tcp.o    \
 		$(i_cdmus_o)    \
 		$(i_net_o)      \

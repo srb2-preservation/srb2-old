@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
@@ -16,7 +16,7 @@
 //-----------------------------------------------------------------------------
 /// \file
 /// \brief SRB2 network game communication and protocol, all OS independent parts.
-//	
+//
 ///	Implement a Sliding window protocol without receiver window
 ///	(out of order reception)
 ///	This protocol uses a mix of "goback n" and "selective repeat" implementation
@@ -53,7 +53,7 @@ tic_t connectiontimeout = (15*TICRATE);
 /// \brief network packet
 doomcom_t *doomcom = NULL;
 /// \brief network packet data, points inside doomcom
-doomdata_t *netbuffer = NULL; 
+doomdata_t *netbuffer = NULL;
 
 FILE *debugfile = NULL; // put some net info in a file during the game
 
@@ -74,9 +74,11 @@ boolean (*I_NetCanSend)(void) = NULL;
 boolean (*I_NetCanGet)(void) = NULL;
 void (*I_NetCloseSocket)(void) = NULL;
 void (*I_NetFreeNodenum)(int nodenum) = NULL;
+SINT8 (*I_NetMakeNodewPort)(const char *address, const char* port) = NULL;
 signed char (*I_NetMakeNode)(const char *address) = NULL;
 boolean (*I_NetOpenSocket)(void) = NULL;
 boolean (*I_Ban) (int node) = NULL;
+const char *(*I_GetNodeAddress) (INT32 node) = NULL;
 void (*I_ClearBans)(void) = NULL;
 boolean *bannednode = NULL;
 

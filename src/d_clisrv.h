@@ -257,7 +257,7 @@ void SV_ResetServer(void);
 void CL_AddSplitscreenPlayer(void);
 void CL_RemoveSplitscreenPlayer(void);
 void CL_Reset(void);
-void CL_UpdateServerList(boolean internetsearch);
+void CL_UpdateServerList(boolean internetsearch, INT32 room);
 // is there a game running
 boolean Playing(void);
 

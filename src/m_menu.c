@@ -613,8 +613,10 @@ static unsigned int localservercount;
 
 static void M_Refresh(int choice)
 {
+#if 0
 	choice = 0;
 	CL_UpdateServerList(cv_serversearch.value);
+#endif
 }
 
 static menuitem_t  ConnectMenu[] =
@@ -739,6 +741,7 @@ menu_t ConnectIPdef =
 
 static void M_ConnectMenu(int choice)
 {
+#if 0
 	choice = 0;
 	if (Playing())
 	{
@@ -763,6 +766,7 @@ static void M_ConnectMenu(int choice)
 
 	M_SetupNextMenu(&Connectdef);
 	M_Refresh(0);
+#endif
 }
 
 // Connect using IP address Tails 11-19-2002
@@ -1957,7 +1961,7 @@ static menuitem_t ServerMenu[] =
 	{IT_STRING|IT_CVAR,              NULL, "Skill",                 &cv_skill,           0},
 	{IT_STRING|IT_CVAR,              NULL, "Game Type",             &cv_newgametype,    10},
 
-	{IT_STRING|IT_CVAR,              NULL, "Advertise on Internet", &cv_internetserver, 20},
+	//{IT_STRING|IT_CVAR,              NULL, "Advertise on Internet", &cv_internetserver, 20},
 	{IT_STRING|IT_CVAR|IT_CV_STRING, NULL, "Server Name",           &cv_servername,     30},
 
 	{IT_STRING|IT_CVAR,              NULL, "Level",                 &cv_nextmap,        60},
@@ -2115,6 +2119,7 @@ static inline void M_StartSplitServerMenu(void)
 
 static void M_StartServerMenu(int choice)
 {
+#if 0
 	if (Playing())
 	{
 		M_StartMessage(ALREADYPLAYING, M_ExitGameResponse, MM_YESNO);
@@ -2127,6 +2132,7 @@ static void M_StartServerMenu(int choice)
 	ServerMenu[2].status = IT_STRING|IT_CVAR; // Make advertise on Internet option available.
 	ServerMenu[3].status = IT_STRING|IT_CVAR|IT_CV_STRING; // Server name too.
 	M_SetupNextMenu(&Serverdef);
+#endif
 }
 
 //===========================================================================
@@ -2151,8 +2157,8 @@ typedef enum
 
 static menuitem_t MultiPlayerMenu[] =
 {
-	{IT_CALL | IT_STRING, NULL, "HOST GAME",              M_StartServerMenu,      10},
-	{IT_CALL | IT_STRING, NULL, "JOIN GAME (Search)",     M_ConnectMenu,          20},
+	{IT_CALL | IT_STRING|IT_DISABLED, NULL, "HOST GAME",              M_StartServerMenu,      10},
+	{IT_CALL | IT_STRING|IT_DISABLED, NULL, "JOIN GAME (Search)",     M_ConnectMenu,          20},
 	{IT_CALL | IT_STRING, NULL, "JOIN GAME (Specify IP)", M_ConnectIPMenu,        30},
 	{IT_CALL | IT_STRING, NULL, "TWO PLAYER GAME",        M_Splitscreen,          50},
 	{IT_CALL | IT_STRING, NULL, "NETWORK OPTIONS",        M_NetOption,            70},
@@ -5234,11 +5240,9 @@ static void M_ChaosOptions(int choice)
 //===========================================================================
 static menuitem_t ServerOptionsMenu[] =
 {
-	{IT_STRING | IT_CVAR, NULL, "Internet server", &cv_internetserver,     0},
-	{IT_STRING | IT_CVAR | IT_CV_STRING,
-	                      NULL, "Master server",   &cv_masterserver,       0},
-	{IT_STRING | IT_CVAR | IT_CV_STRING,
-	                      NULL, "Server name",     &cv_servername,         0},
+	//{IT_STRING | IT_CVAR, NULL, "Internet server", &cv_internetserver,     0},
+	//{IT_STRING | IT_CVAR | IT_CV_STRING, NULL, "Master server",   &cv_masterserver,       0},
+	{IT_STRING | IT_CVAR | IT_CV_STRING, NULL, "Server name",     &cv_servername,         0},
 };
 
 menu_t ServerOptionsDef =
