@@ -42,9 +42,9 @@ UINT8 NearestPaletteColor(UINT8 r, UINT8 g, UINT8 b, RGBA_t *palette);
 //
 typedef struct
 {
-	short originx, originy;
-	short patch, stepdir, colormap;
-} mappatch_t;
+	INT16 originx, originy;
+	INT16 patch, stepdir, colormap;
+} ATTRPACK mappatch_t;
 
 //
 // Texture definition.
@@ -54,13 +54,13 @@ typedef struct
 typedef struct
 {
 	char name[8];
-	boolean masked;
-	short width;
-	short height;
-	void **columndirectory; // FIXTHIS: OBSOLETE
-	short patchcount;
+	INT32 masked;
+	INT16 width;
+	INT16 height;
+	INT32 columndirectory; // FIXTHIS: OBSOLETE
+	INT16 patchcount;
 	mappatch_t patches[1];
-} maptexture_t;
+} ATTRPACK maptexture_t;
 
 // A single patch from a texture definition,
 //  basically a rectangular area within
