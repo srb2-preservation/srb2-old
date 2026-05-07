@@ -27,6 +27,7 @@
 #include "doomtype.h"
 #include "w_wad.h"
 #include "d_event.h"
+#include "command.h"
 
 typedef enum {
 	MM_OFF = 0,
