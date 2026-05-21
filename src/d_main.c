@@ -73,6 +73,12 @@
 #include "p_local.h" // chasecam
 #include "mserv.h" // cv_internetserver
 
+#ifdef CMAKECONFIG
+#include "config.h"
+#else
+#include "config.h.in"
+#endif
+
 #ifdef _XBOX
 #include "sdl/SRB2XBOX/xboxhelp.h"
 #endif
@@ -1237,17 +1243,17 @@ void D_SRB2Main(void)
 	D_CleanFile();
 
 	// Check MD5s of autoloaded files
-	W_VerifyFileMD5(0, "4d26f0d5ab5c5d7b4090367f95ea9f85"); // srb2.srb
-	W_VerifyFileMD5(1, "5b70614bd87bad9a9e11ea7190a108f7"); // sonic.plr
-	W_VerifyFileMD5(2, "e11f0ff56551ceca77d5859ee1f88a7d"); // tails.plr
-	W_VerifyFileMD5(3, "553d300a7af2382f9283007332a852f4"); // knux.plr
-	W_VerifyFileMD5(4, "260c573350ce0345617b88caffdbe88d"); // auto.wpn
-	W_VerifyFileMD5(5, "b69d4d6a7f6c1237087e20894e036121"); // bomb.wpn
-	W_VerifyFileMD5(6, "b10704b65ca11def64774105b02f38d0"); // home.wpn
-	W_VerifyFileMD5(7, "e00ca6ec8f9bfd0fdcac3c0cdd9d296d"); // rail.wpn
-	W_VerifyFileMD5(8, "075286244551bcd6eab3153af97f8d50"); // infn.wpn
-	W_VerifyFileMD5(9, "7d355827fa8f981482246d6c95f9bd48"); // drill.dta
-	W_VerifyFileMD5(10, "938cbc8141c316c911215ecb4072fade"); // soar.dta
+	W_VerifyFileMD5(0, ASSET_HASH_SRB2_SRB); // srb2.srb
+	W_VerifyFileMD5(1, ASSET_HASH_SONIC_PLR); // sonic.plr
+	W_VerifyFileMD5(2, ASSET_HASH_TAILS_PLR); // tails.plr
+	W_VerifyFileMD5(3, ASSET_HASH_KNUX_PLR); // knux.plr
+	W_VerifyFileMD5(4, ASSET_HASH_AUTO_WPN); // auto.wpn
+	W_VerifyFileMD5(5, ASSET_HASH_BOMB_WPN); // bomb.wpn
+	W_VerifyFileMD5(6, ASSET_HASH_HOME_WPN); // home.wpn
+	W_VerifyFileMD5(7, ASSET_HASH_RAIL_WPN); // rail.wpn
+	W_VerifyFileMD5(8, ASSET_HASH_INFN_WPN); // infn.wpn
+	W_VerifyFileMD5(9, ASSET_HASH_DRILL_DTA); // drill.dta
+	W_VerifyFileMD5(10, ASSET_HASH_SOAR_DTA); // soar.dta
 
 	// don't check music.dta because people like to modify it, and it doesn't matter if they do
 	// ...except it does if they slip maps in there, and that's what W_VerifyNMUSlumps is for.

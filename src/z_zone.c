@@ -167,7 +167,7 @@ void Z_Free(void *ptr)
 		return;
 
 #ifdef ZDEBUG2
-	CONS_Debug(DBG_MEMORY, "Z_Free %s:%d\n", file, line);
+	CONS_Printf("Z_Free %s:%d\n", file, line);
 #endif
 
 #ifdef ZDEBUG
@@ -178,13 +178,7 @@ void Z_Free(void *ptr)
 
 #ifdef ZDEBUG
 	// Write every Z_Free call to a debug file.
-	CONS_Debug(DBG_MEMORY, "Z_Free at %s:%d\n", file, line);
-#endif
-
-#ifdef HAVE_BLUA
-	// anything that isn't by lua gets passed to lua just in case.
-	if (block->tag != PU_LUA)
-		LUA_InvalidateUserdata(ptr);
+	CONS_Printf("Z_Free at %s:%d\n", file, line);
 #endif
 
 	// TODO: if zdebugging, make sure no other block has a user
@@ -249,7 +243,7 @@ void *Z_MallocAlign(size_t size, INT32 tag, void *user, INT32 alignbits)
 	size_t blocksize = extrabytes + sizeof *hdr + size;
 
 #ifdef ZDEBUG2
-	CONS_Debug(DBG_MEMORY, "Z_Malloc %s:%d\n", file, line);
+	CONS_Printf("Z_Malloc %s:%d\n", file, line);
 #endif
 
 	block = xm(sizeof *block);
@@ -336,7 +330,7 @@ void *Z_ReallocAlign(void *ptr, size_t size,INT32 tag, void *user,  INT32 alignb
 	size_t copysize;
 
 #ifdef ZDEBUG2
-	CONS_Debug(DBG_MEMORY, "Z_Realloc %s:%d\n", file, line);
+	CONS_Printf("Z_Realloc %s:%d\n", file, line);
 #endif
 
 	if (!size)
@@ -453,7 +447,7 @@ void Z_CheckHeap(INT32 i)
 		hdr = block->hdr;
 		given = (UINT8 *)hdr + sizeof *hdr;
 #ifdef ZDEBUG2
-		CONS_Debug(DBG_MEMORY, "block %u owned by %s:%d\n",
+		CONS_Printf("block %u owned by %s:%d\n",
 			blocknumon, block->ownerfile, block->ownerline);
 #endif
 #ifdef VALGRIND_MEMPOOL_EXISTS
