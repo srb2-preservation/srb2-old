@@ -166,8 +166,8 @@ FUNCPRINTF void DBG_Printf(const char *lpFmt, ...)
 			WriteFile(logstream, str, strlen(str), &bytesWritten, NULL);
 	}
 #else
-	if (logstream!=-1)
-		write(logstream, str, (int)strlen(str));
+	if (logstream != NULL)
+		fwrite(str, strlen(str), 1, logstream);
 #endif
 
 #else
