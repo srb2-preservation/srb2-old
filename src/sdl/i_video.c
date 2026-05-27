@@ -937,8 +937,10 @@ void I_OsPolling(void)
 {
 	SDL_Keymod mod;
 
+#ifndef __EMSCRIPTEN__
 	if (consolevent)
 		I_GetConsoleEvents();
+#endif
 	if (SDL_WasInit(SDL_INIT_JOYSTICK) == SDL_INIT_JOYSTICK)
 	{
 		SDL_JoystickUpdate();

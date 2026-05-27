@@ -44,6 +44,10 @@ typedef LPVOID (WINAPI *p_MapViewOfFile) (HANDLE, DWORD, DWORD, DWORD, SIZE_T);
 #elif defined (_MSC_VER)
 #include <direct.h>
 #endif
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#undef HAVE_TERMIOS // do not read on /dev/tty, JavaScript alert() are blocking
+#endif
 #if defined (__unix__) || defined (UNIXLIKE)
 #include <fcntl.h>
 #endif
@@ -78,7 +82,7 @@ void Command_SDLVer_f(void);
 #define HAVE_SDLCPUINFO
 
 #if defined (__unix__) || defined(__APPLE__) || (defined (UNIXLIKE) && !defined (__HAIKU__))
-#if defined (__linux__)
+#if defined (__linux__) || defined(__EMSCRIPTEN__) 
 #include <sys/vfs.h>
 #else
 #include <sys/param.h>
@@ -88,8 +92,10 @@ void Command_SDLVer_f(void);
 #ifdef FREEBSD
 #include <kvm.h>
 #endif
+#ifndef EMSCRIPTEN
 #include <nlist.h>
 #include <sys/vmmeter.h>
+#endif
 #endif
 #endif
 
@@ -783,8 +789,12 @@ void I_OutputMsg(const char *fmt, ...)
 	}
 #endif
 
+#ifdef __EMSCRIPTEN__
+	fprintf(stdout, "%s", txt);
+#else
 	if (!framebuffer)
 		fprintf(stderr, "%s", txt);
+#endif
 #ifdef HAVE_TERMIOS
 	if (consolevent)
 	{
@@ -2041,6 +2051,13 @@ void I_Quit(void)
 		free(myargv); // Deallocate allocated memory
 death:
 	W_Shutdown();
+#ifdef __EMSCRIPTEN__
+	emscripten_cancel_main_loop();
+	EM_ASM({
+		noExitRuntime = false;
+		window.location.reload();
+	});
+#endif
 	exit(0);
 }
 
@@ -2239,7 +2256,7 @@ void I_ShutdownSystem(void)
 void I_GetDiskFreeSpace(INT64 *freespace)
 {
 #if defined (__unix__) || defined(__APPLE__) || defined (UNIXLIKE)
-#if defined (SOLARIS) || defined (__HAIKU__)
+#if defined (SOLARIS) || defined (__HAIKU__) || defined (__EMSCRIPTEN__)
 	*freespace = INT32_MAX;
 	return;
 #else // Both Linux and BSD have this, apparently.

@@ -23,6 +23,8 @@
 #ifndef __DOOMTYPE__
 #define __DOOMTYPE__
 
+#include <stdbool.h>
+
 #if (defined (_WIN32) && !defined (_XBOX)) || (defined (_WIN32_WCE) && !defined (__GNUC__)) || defined (_WIN64)
 //#define WIN32_LEAN_AND_MEAN
 #define RPC_NO_WINDOWS_H
@@ -162,7 +164,7 @@ typedef long ssize_t;
 	#endif
 #endif //macintosh
 
-#if defined (PC_DOS) || defined (_WIN32) || defined (_WIN64) || defined (_PSP_) || defined (_arch_dreamcast)
+#if defined (PC_DOS) || defined (_WIN32) || defined (_WIN64) || defined (_PSP_) || defined (_arch_dreamcast) || defined(__EMSCRIPTEN__)
 #define HAVE_DOSSTR_FUNCS
 #endif
 
@@ -202,7 +204,7 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 		#define true    TRUE
 		#define boolean BOOL
 	#else
-		typedef enum {false, true} boolean;
+		typedef bool boolean;
 	#endif
 	//#endif // __cplusplus
 #endif // __BYTEBOOL__

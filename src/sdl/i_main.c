@@ -107,15 +107,20 @@ static inline VOID MakeCodeWritable(VOID)
 #pragma GCC diagnostic ignored "-Wmissing-noreturn"
 #endif
 
+#if defined(__EMSCRIPTEN__)
+int main_program(void)
+{ 
+#else
 #ifdef FORCESDLMAIN
 int SDL_main(int argc, char **argv)
 #else
 int main(int argc, char **argv)
 #endif
 {
-	const char *logdir = NULL;
 	myargc = argc;
 	myargv = argv; /// \todo pull out path to exe from this string
+#endif
+	const char *logdir = NULL;
 
 #ifdef HAVE_TTF
 #ifdef _WIN32
@@ -172,4 +177,16 @@ int main(int argc, char **argv)
 	// return to OS
 	return 0;
 }
+
+#if defined (__EMSCRIPTEN__) 
+int main(int argc, char **argv)
+{
+    myargc = argc;
+	myargv = argv;
+
+    I_MountIDBFS(); // Mount IndexedDB filesystem on entry
+
+	return 0;
+}
+#endif
 #endif

@@ -36,7 +36,7 @@
 #define NONET
 #endif
 
-#if !defined (NONET) && !defined (NOIPX)
+#if !defined (NONET) && !defined (NOIPX) && !defined(__EMSCRIPTEN__)
 #define USEIPX //Alam: Remline to turn off IPX support
 #endif
 

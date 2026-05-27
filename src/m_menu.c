@@ -4780,7 +4780,7 @@ static menuitem_t VideoOptionsMenu[] =
 {
 	// Tails
 	{IT_STRING | IT_SUBMENU, NULL, "Video Modes...",      &VidModeDef,      0},
-#if defined (UNIXLIKE) || defined (SDL)
+#if defined (UNIXLIKE) || defined (SDL) && !defined (__EMSCRIPTEN__)
 	{IT_STRING|IT_CVAR,      NULL, "Fullscreen",          &cv_fullscreen,  10},
 #endif
 #ifdef HWRENDER
@@ -5340,8 +5340,9 @@ static void M_DrawReadThis2(void)
 //
 // Toggles sound systems in-game.
 //
-static void M_ToggleSFX(void)
+static void M_ToggleSFX(int choice)
 {
+	(void)choice;
 	if (nosound)
 	{
 		nosound = false;
@@ -5366,8 +5367,9 @@ static void M_ToggleSFX(void)
 	}
 }
 
-static void M_ToggleDigital(void)
+static void M_ToggleDigital(int choice)
 {
+	(void)choice;
 	if (nofmod)
 	{
 		nofmod = false;
@@ -5394,8 +5396,9 @@ static void M_ToggleDigital(void)
 	}
 }
 
-static void M_ToggleMIDI(void)
+static void M_ToggleMIDI(int choice)
 {
+	(void)choice;
 	if (nomusic)
 	{
 		nomusic = false;
@@ -5573,7 +5576,7 @@ static menu_t JoystickSetDef =
 //===========================================================================
 static void M_DrawControl(void);               // added 3-1-98
 static void M_ChangeControl(int choice);
-static void M_ControlDef2(void);
+static void M_ControlDef2(int choice);
 
 //
 // this is the same for all control pages
@@ -5656,8 +5659,9 @@ menu_t ControlDef2 =
 static  boolean setupcontrols_secondaryplayer;
 static  int   (*setupcontrols)[2];  // pointer to the gamecontrols of the player being edited
 
-static void M_ControlDef2(void)
+static void M_ControlDef2(int choice)
 {
+	(void)choice;
 	M_SetupNextMenu(&ControlDef2);
 }
 

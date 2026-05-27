@@ -91,6 +91,11 @@
 #include "win32/win_main.h" // I_DoStartupMouse
 #endif
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
+
 #include "hardware/hw3sound.h"
 
 //
@@ -553,12 +558,14 @@ static void D_Display(void)
 // D_SRB2Loop
 // =========================================================================
 
+static void D_RunFrame(void);
 tic_t rendergametic;
 boolean supdate;
+static tic_t oldentertics = 0, entertic = 0, realtics = 0, rendertimeout = (tic_t)-1;
 
 void D_SRB2Loop(void)
 {
-	tic_t oldentertics = 0, entertic = 0, realtics = 0, rendertimeout = (tic_t)-1;
+
 
 	if (demorecording)
 		G_BeginRecording();
@@ -594,8 +601,17 @@ void D_SRB2Loop(void)
 	SCR_SetMode(); // change video mode
 	SCR_Recalc();
 
+#if defined(__EMSCRIPTEN__)
+	emscripten_set_main_loop(D_RunFrame, 0, 1);
+#else
 	for (;;)
 	{
+		D_RunFrame();
+	}
+#endif
+}
+static void D_RunFrame(void)
+{	
 		// get real tics
 		entertic = I_GetTime();
 		realtics = entertic - oldentertics;
@@ -610,7 +626,7 @@ void D_SRB2Loop(void)
 		if (!realtics && !singletics)
 		{
 			I_Sleep();
-			continue;
+			return;
 		}
 
 #ifdef HW3SOUND
@@ -630,8 +646,12 @@ void D_SRB2Loop(void)
 			supdate = false;
 
 			if (moviemode)
-				M_SaveFrame();
-			if (takescreenshot) // Only take screenshots after drawing.
+#ifdef HAVE_PNG
+			M_SaveFrame();
+#else
+			COM_BufAddText("screenshot");
+#endif
+		if (takescreenshot) // Only take screenshots after drawing.
 				M_DoScreenShot();
 		}
 		else if (rendertimeout < entertic) // in case the server hang or netsplit
@@ -662,7 +682,6 @@ void D_SRB2Loop(void)
 		HW3S_EndFrameUpdate();
 #endif
 	}
-}
 
 //
 // D_PageTicker
