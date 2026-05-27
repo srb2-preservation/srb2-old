@@ -195,6 +195,7 @@
         preRun: [() => {
            buildUserArguments();
            Module['arguments'].push(...userArguments);
+           Module['arguments'].push(...'-skipintro'); // Hackity hack, input is broken during intro
         }],
         setStatus: setStatus,
         totalDependencies: 0,
