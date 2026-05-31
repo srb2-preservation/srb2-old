@@ -92,9 +92,9 @@ consvar_t cv_grfogdensity = {"gr_fogdensity", "25", CV_CALL|CV_NOINIT, CV_Unsign
                              CV_FogDensity_ONChange, 0, NULL, NULL, 0, 0, NULL};
 
 // Unfortunately, this can no longer be saved...
-consvar_t cv_grfiltermode = {"gr_filtermode", "Bilinear", CV_CALL, grfiltermode_cons_t,
+consvar_t cv_grfiltermode = {"gr_filtermode", "Bilinear", CV_CALL|CV_SAVE, grfiltermode_cons_t,
                              CV_filtermode_ONChange, 0, NULL, NULL, 0, 0, NULL};
-consvar_t cv_granisotropicmode = {"gr_anisotropicmode", "1", CV_CALL, granisotropicmode_cons_t,
+consvar_t cv_granisotropicmode = {"gr_anisotropicmode", "1", CV_CALL|CV_SAVE, granisotropicmode_cons_t,
                              CV_anisotropic_ONChange, 0, NULL, NULL, 0, 0, NULL};
 //static consvar_t cv_grzbuffer = {"gr_zbuffer", "On", 0, CV_OnOff};
 consvar_t cv_grcorrecttricks = {"gr_correcttricks", "On", 0, CV_OnOff, NULL, 0, NULL, NULL, 0, 0, NULL};
