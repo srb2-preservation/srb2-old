@@ -48,6 +48,10 @@ typedef LPVOID (WINAPI *p_MapViewOfFile) (HANDLE, DWORD, DWORD, DWORD, SIZE_T);
 #include <fcntl.h>
 #endif
 
+#ifdef CMAKECONFIG
+#include "../config.h.in"
+#endif
+
 #include <stdio.h>
 #ifdef _WIN32
 #include <conio.h>

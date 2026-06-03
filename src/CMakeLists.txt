@@ -155,8 +155,6 @@ set(SRB2_CONFIG_HAVE_ZLIB ON CACHE BOOL
 	"Enable zlib support.")
 set(SRB2_CONFIG_HWRENDER OFF CACHE BOOL
 	"Enable hardware rendering through OpenGL.")
-set(SRB2_CONFIG_STATIC_OPENGL OFF CACHE BOOL
-	"Use statically linked OpenGL. NOT RECOMMENDED.")
 
 if(${SRB2_CONFIG_HAVE_LIBGME})
 	# ???
@@ -217,11 +215,10 @@ if(${SRB2_CONFIG_HWRENDER})
 	)
 endif()
 
-if(${SRB2_CONFIG_HWRENDER} AND ${SRB2_CONFIG_STATIC_OPENGL})
+if(${SRB2_CONFIG_HWRENDER})
 	find_package(OpenGL)
 	if(${OPENGL_FOUND})
 		add_definitions(-DHWRENDER)
-        add_definitions(-DSTATIC_OPENGL)
 	else()
 		message(WARNING "You have specified static opengl but opengl was not found. Not setting HWRENDER.")
 	endif()
