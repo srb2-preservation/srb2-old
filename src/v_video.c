@@ -266,8 +266,8 @@ void V_DrawMappedPatch(int x, int y, int scrn, patch_t *patch, const byte *color
 	const byte *source, *deststop;
 
 #ifdef HWRENDER
-	// draw a hardware converted patch
-	if (rendermode != render_soft && rendermode != render_none)
+	//if (rendermode != render_soft && !con_startup)		// Why?
+	if (rendermode != render_soft)
 	{
 		HWR_DrawMappedPatch((GlidePatch_t *)patch, x, y, scrn, colormap);
 		return;

@@ -152,12 +152,22 @@ void I_StartupSound(void)
 	Mix_Init(MIX_INIT_FLAC|MIX_INIT_MOD|MIX_INIT_MP3|MIX_INIT_OGG);
 #endif
 
-	if (Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 2048) < 0)
+	if (Mix_OpenAudioDevice(44100, AUDIO_S16SYS, 2, 2048, NULL, 0) < 0)
 	{
 		CONS_Printf("ERROR: Error starting SDL_Mixer: %s\n", Mix_GetError());
 		// call to start audio failed -- we do not have it
 		return;
 	}
+
+	SDL_version SDLmixcompiled;
+	const SDL_version *SDLmixlinked;
+	SDL_MIXER_VERSION(&SDLmixcompiled)
+	SDLmixlinked = Mix_Linked_Version();
+
+	I_OutputMsg("Compiled for SDL_mixer version: %d.%d.%d\n",
+				SDLmixcompiled.major, SDLmixcompiled.minor, SDLmixcompiled.patch);
+	I_OutputMsg("Linked with SDL_mixer version: %d.%d.%d\n",
+				SDLmixlinked->major, SDLmixlinked->minor, SDLmixlinked->patch);
 
 	sound_started = true;
 	songpaused = false;

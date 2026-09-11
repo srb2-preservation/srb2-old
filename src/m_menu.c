@@ -7206,6 +7206,9 @@ boolean M_Responder(event_t *ev)
 	if (dedicated || gamestate == GS_INTRO || gamestate == GS_INTRO2 || gamestate == GS_CUTSCENE)
 		return false;
 
+	if (CON_Ready())
+		return false;
+
 	if (ev->type == ev_keyup && ev->data1 == KEY_SHIFT)
 	{
 		shiftdown = false;
@@ -7632,6 +7635,7 @@ boolean M_Responder(event_t *ev)
 					S_StartSound(NULL, sfx_menu1);
 					return true;
 				}*/
+			CON_Responder(ev);
 			break;
 	}
 
@@ -7680,7 +7684,7 @@ void M_StartControlPanel(void)
 	currentMenu = &MainDef;
 	itemOn = singleplr;
 
-	CON_ToggleOff(); // move away console
+	//CON_ToggleOff(); // move away console
 
 	if (timeattacking) // Cancel recording
 	{

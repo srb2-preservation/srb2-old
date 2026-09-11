@@ -52,6 +52,10 @@ typedef LPVOID (WINAPI *p_MapViewOfFile) (HANDLE, DWORD, DWORD, DWORD, SIZE_T);
 #include <fcntl.h>
 #endif
 
+#ifdef CMAKECONFIG
+#include "../config.h.in"
+#endif
+
 #include <stdio.h>
 #ifdef _WIN32
 #include <conio.h>
@@ -2007,6 +2011,9 @@ INT32 I_StartupSystem(void)
 	 SDLcompiled.major, SDLcompiled.minor, SDLcompiled.patch);
 	I_OutputMsg("Linked with SDL version: %d.%d.%d\n",
 	 SDLlinked.major, SDLlinked.minor, SDLlinked.patch);
+#if SDL_VERSION_ATLEAST(2,0,18)
+	SDL_SetHint(SDL_HINT_APP_NAME, "SRB2 Old"); // weird name but ok
+#endif
 	if (SDL_Init(0) < 0)
 		I_Error("SRB2: SDL System Error: %s", SDL_GetError()); //Alam: Oh no....
 	return 0;
@@ -2261,7 +2268,7 @@ void I_GetDiskFreeSpace(INT64 *freespace)
 	return;
 #else // Both Linux and BSD have this, apparently.
 	struct statfs stfs;
-	if (statfs(".", &stfs) == -1)
+	if (statfs(srb2home, &stfs) == -1)
 	{
 		*freespace = INT32_MAX;
 		return;
@@ -2280,7 +2287,7 @@ void I_GetDiskFreeSpace(INT64 *freespace)
 	}
 	if (pfnGetDiskFreeSpaceEx)
 	{
-		if (pfnGetDiskFreeSpaceEx(NULL, &lfreespace, &usedbytes, NULL))
+		if (pfnGetDiskFreeSpaceEx(srb2home, &lfreespace, &usedbytes, NULL))
 			*freespace = lfreespace.QuadPart;
 		else
 			*freespace = INT32_MAX;
@@ -2495,9 +2502,9 @@ static const char *locateWad(void)
 	const char *envstr;
 	const char *WadPath;
 
-	I_OutputMsg("SRB2WADDIR");
-	// does SRB2WADDIR exist?
-	if (((envstr = I_GetEnv("SRB2WADDIR")) != NULL) && isWadPathOk(envstr))
+	I_OutputMsg("SRB2OLDWADDIR");
+	// does SRB2OLDWADDIR exist?
+	if (((envstr = I_GetEnv("SRB2OLDWADDIR")) != NULL) && isWadPathOk(envstr))
 		return envstr;
 
 #ifndef NOCWD
