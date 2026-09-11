@@ -164,9 +164,9 @@ void I_StartupSound(void)
 	SDL_MIXER_VERSION(&SDLmixcompiled)
 	SDLmixlinked = Mix_Linked_Version();
 
-	I_OutputMsg("Compiled for SDL_mixer version: %d.%d.%d\n",
+	CONS_Printf("Compiled for SDL_mixer version: %d.%d.%d\n",
 				SDLmixcompiled.major, SDLmixcompiled.minor, SDLmixcompiled.patch);
-	I_OutputMsg("Linked with SDL_mixer version: %d.%d.%d\n",
+	CONS_Printf("Linked with SDL_mixer version: %d.%d.%d\n",
 				SDLmixlinked->major, SDLmixlinked->minor, SDLmixlinked->patch);
 
 	sound_started = true;
